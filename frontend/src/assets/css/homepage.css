@@ -1,0 +1,147 @@
+/* homepage.css — Home sections (hero, featured, gallery, newsletter). Utility-driven. */
+
+/* Shop By Category — compact, near edge-to-edge grid.
+   Small premium horizontal margin (~20–32px on desktop); all primary categories
+   visible in one row on desktop, wrapping cleanly on smaller screens. */
+.category-section {
+  width: 100%;
+  padding: 32px 20px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.category-card {
+  border-radius: 0;
+}
+
+.category-card img {
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  object-fit: cover;
+}
+
+.category-card .flat-media-title {
+  bottom: 12px;
+  font-size: 12px;
+}
+
+@media (min-width: 640px) {
+  /* Tablet: wrap into two rows of three. */
+  .category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (min-width: 768px) {
+  /* Override the global #home-root section padding (clamp up to 64px) for this
+     section only, keeping a small premium margin near the viewport edges. */
+  #home-root > section.category-section {
+    padding-left: clamp(20px, 2.4vw, 32px) !important;
+    padding-right: clamp(20px, 2.4vw, 32px) !important;
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop: all primary categories on one row. Override the global
+     #home-root .grid gap rule via the dedicated .category-grid class. */
+  #home-root .category-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 16px !important;
+  }
+}
+/* ============================================================
+   HOMEPAGE PRODUCT CARDS (Featured / New Arrivals)
+   Matching the squared, bordered, "NEW" badge style
+   ============================================================ */
+
+/* 1. The grid container for your products */
+.homepage-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0; /* No gap so borders touch exactly like your image */
+  width: 100%;
+  background-color: #f5f5f5;
+}
+
+/* 2. The individual product card */
+.homepage-product-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Forces a perfect square */
+  background-color: #e6e6e6; /* Light grey background like the image */
+  border: 1px solid #000000; /* Thin black border around each card */
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+}
+
+/* 3. Product image inside the card */
+.homepage-product-card img {
+  width: 75%; /* Adjust this to make the product bigger/smaller inside */
+  height: auto;
+  max-height: 80%;
+  object-fit: contain;
+  mix-blend-mode: multiply; /* Helps remove white backgrounds on images */
+  transition: transform 0.4s ease;
+}
+
+/* 4. Hover effect */
+.homepage-product-card:hover {
+  background-color: #dcdcdc;
+}
+.homepage-product-card:hover img {
+  transform: scale(1.03);
+}
+
+/* 5. "NEW" Badge - top left corner */
+.homepage-product-card .badge-new {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+/* 6. "OUT OF STOCK" overlay - bottom right */
+.homepage-product-card .out-of-stock {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  backdrop-filter: blur(2px);
+}
+
+/* 7. Mobile adjustments */
+@media (max-width: 639px) {
+  .homepage-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 cards per row on mobile */
+  }
+  .homepage-product-card {
+    padding: 16px;
+  }
+  .homepage-product-card img {
+    width: 70%;
+  }
+}

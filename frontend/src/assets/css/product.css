@@ -1,0 +1,269 @@
+/* product.css — Editorial product page matching the provided reference.
+   Hand-written (the Tailwind build is pre-compiled, so new utility classes
+   can't be added). Uses the existing design tokens from variables.css.
+
+   Layout: the page runs full-bleed under the site header. On desktop the
+   left two thirds are an edge-to-edge two-up photo grid and the right third
+   is a sticky panel (title / price / size / accordions / CTAs). On mobile the
+   photos stack and the panel follows underneath. */
+
+body[data-page="product"] #product-root {
+  max-width: none;
+  margin: 0;
+}
+
+/* ---- Shell ---- */
+.pp {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  background: var(--paper);
+}
+
+/* ---- Photo grid ---- */
+.pp-media {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  background: var(--line);
+}
+.pp-shot {
+  margin: 0;
+  background: var(--soft);
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+.pp-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---- Panel ---- */
+.pp-panel {
+  padding: 22px 16px 40px;
+}
+
+.pp-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+
+.pp-price {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.pp-price .now { font-size: 13px; font-weight: 600; color: var(--ink); }
+.pp-price .was { font-size: 13px; color: var(--muted); text-decoration: line-through; }
+.pp-price .off {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sale);
+  background: var(--sale-soft);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+/* ---- Size selector ---- */
+.pp-size-block { margin-top: 28px; }
+.pp-size-label {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.pp-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pp-size {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.pp-size:hover:not([disabled]) { border-color: var(--ink); }
+.pp-size[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.pp-size[disabled] {
+  color: var(--muted);
+  background: var(--soft);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ---- Accordions (Description / Size & Fit) ---- */
+.pp-accs { margin-top: 30px; }
+
+.pp-acc { border-bottom: 1px solid var(--line); }
+.pp-acc:first-child { border-top: 1px solid var(--line); }
+
+.pp-acc__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+.pp-acc__head::-webkit-details-marker { display: none; }
+
+.pp-chev {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+.pp-acc[open] .pp-chev { transform: rotate(180deg); }
+
+.pp-acc__body { padding: 0 0 18px; }
+
+.pp-acc__copy {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.pp-size-chart {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: var(--ink);
+}
+.pp-size-chart th,
+.pp-size-chart td {
+  border-bottom: 1px solid var(--line);
+  padding: 9px 6px;
+  text-align: center;
+}
+.pp-size-chart th {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pp-size-chart td:first-child { font-weight: 700; }
+
+.pp-chart-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ---- CTAs ---- */
+.pp-cta {
+  display: grid;
+  gap: 10px;
+  margin-top: 26px;
+}
+.pp-btn {
+  height: 52px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.pp-btn--add {
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+.pp-btn--add:hover { background: var(--soft); }
+.pp-btn--buy {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+.pp-btn--buy:hover { background: #000; }
+
+.pp-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.pp-save svg { width: 16px; height: 16px; }
+.pp-save[aria-pressed="true"] { color: var(--sale); }
+
+/* ---- "More <Subcategory>" suggestions ---- */
+.pp-more {
+  padding: 56px 16px 72px;
+  border-top: 1px solid var(--line);
+}
+.pp-more__title {
+  margin: 0 0 24px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+@media (min-width: 900px) {
+  body[data-page="product"] #site-bottom-nav { display: none; }
+
+  /* Two photo columns + the panel, mirroring the reference proportions. */
+  .pp {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(340px, 0.9fr);
+    align-items: start;
+  }
+
+  .pp-media {
+    grid-column: 1 / 3;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* --pp-header is measured from the real site header by js/product.js. */
+  .pp-shot { aspect-ratio: auto; height: calc(100vh - var(--pp-header, 60px)); }
+
+  .pp-panel {
+    position: sticky;
+    top: var(--pp-header, 60px);
+    max-height: calc(100vh - var(--pp-header, 60px));
+    overflow-y: auto;
+    padding: 26px 40px 40px 22px;
+  }
+
+  .pp-more { padding: 72px 40px 96px; }
+}
+
+@media (min-width: 1280px) {
+  .pp-panel { padding: 30px 64px 48px 26px; }
+  .pp-more { padding: 88px 64px 112px; }
+}

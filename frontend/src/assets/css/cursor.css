@@ -1,0 +1,54 @@
+/* cursor.css — the outlined ring that trails the pointer (js/cursor.js).
+   Its own stylesheet rather than a block in components.css because the landing
+   page loads no shared CSS, and the cursor is meant to be everywhere. */
+
+.cursor-ring {
+  position: fixed;
+  /* Positioned entirely by transform in js/cursor.js — top/left stay at 0 so the
+     compositor can move it without touching layout. */
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  /* Non-negotiable: without this the ring sits under the pointer and swallows
+     every hover and click on the site. */
+  pointer-events: none;
+  /* `difference` inverts whatever is behind it, so one ring reads on the white
+     store pages and on the landing page's near-black video without knowing
+     which it is on. */
+  mix-blend-mode: difference;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  will-change: transform;
+}
+
+/* Hidden until the pointer is first seen, so it never sits parked at a corner
+   on a page the user is only scrolling or reading. */
+.cursor-ring.is-visible {
+  opacity: 1;
+}
+
+/* Video compositing can suppress difference blending in Chromium. Keep the
+   same ring and motion on the landing page, but force a visible white outline
+   with a dark edge above both the video and the welcome modal. */
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  html:has(.landing) .cursor-ring {
+    border-color: #fff;
+    mix-blend-mode: normal;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* Never in the mobile layout. js/cursor.js checks the same 768px line up front
+   so no ring is built and no rAF loop runs, but this covers the case it cannot:
+   a desktop window dragged narrow after the page has already booted.
+   Also covers touch devices, where a trailing ring has nothing to trail. */
+@media (max-width: 767px), (hover: none), (pointer: coarse) {
+  .cursor-ring,
+  .cursor-ring.is-visible {
+    display: none;
+  }
+}

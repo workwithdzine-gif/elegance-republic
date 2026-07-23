@@ -1,0 +1,196 @@
+/* footer.css — the site footer, on every page including landing.
+   Ported from the landing page's dark editorial footer (previously .lp-footer in
+   landing.css), which is now the only footer. Markup: footerHTML() in
+   js/navigation.js.
+
+   It carries its own dark palette rather than inheriting the page's, because it
+   has to stay black on the white store pages as well as on the black landing
+   page. The tokens sit on .ft itself, not on :root, for exactly that reason.
+
+   This file used to be ~70 lines of `!important` overrides darkening a
+   Tailwind-utility footer; the markup is now purpose-built, so none of that
+   fighting is needed. */
+
+@import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap');
+
+#site-footer {
+  margin-top: clamp(56px, 7vw, 120px);
+}
+
+.ft {
+  --ft-bg: var(--noir);
+  --ft-fg: var(--paper);
+  --ft-dim: rgba(255, 255, 255, 0.55);
+  --ft-faint: rgba(255, 255, 255, 0.28);
+  --ft-rule: rgba(255, 255, 255, 0.14);
+  --ft-mono: 'PT Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  position: relative;
+  padding: 64px 40px 0;
+  background: var(--ft-bg);
+  color: var(--ft-fg);
+  border-top: 1px solid var(--ft-rule);
+  overflow: hidden;
+}
+
+.ft__top {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto auto auto;
+  gap: 48px;
+  align-items: start;
+}
+
+/* Small mono caps label — the recurring accent of this design. */
+.ft__label {
+  margin: 0;
+  font-family: var(--ft-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ft-dim);
+}
+
+/* ---- Newsletter ---- */
+.ft__form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  max-width: 340px;
+}
+
+.ft__input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 2px;
+  color: var(--ft-fg);
+  font-family: inherit;
+  font-size: 14px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--ft-rule);
+  outline: none;
+  transition: border-color 0.25s ease;
+}
+.ft__input::placeholder { color: var(--ft-faint); }
+.ft__input:focus { border-bottom-color: var(--ft-fg); }
+
+.ft__submit {
+  height: 38px;
+  padding: 0 22px;
+  font-family: var(--ft-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ft-fg);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--ft-rule);
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+.ft__submit:hover { background: rgba(255, 255, 255, 0.18); }
+
+.ft__note {
+  margin-top: 10px;
+  min-height: 16px;
+  font-size: 12px;
+  color: var(--ft-dim);
+}
+
+/* ---- Contact (placeholder details — see FOOTER_CONTACT in navigation.js) ---- */
+.ft__contact {
+  margin-top: 28px;
+  font-style: normal; /* <address> italicises by default */
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ft-dim);
+}
+.ft__contact p { margin: 0; }
+.ft__contact a {
+  color: var(--ft-dim);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.ft__contact a:hover { color: var(--ft-fg); }
+
+/* ---- Social ---- */
+.ft__social {
+  display: flex;
+  gap: 14px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ft__social a {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--ft-rule);
+  border-radius: 50%;
+  color: var(--ft-dim);
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+.ft__social a:hover {
+  color: var(--ft-fg);
+  border-color: var(--ft-fg);
+}
+.ft__social svg { width: 16px; height: 16px; }
+
+/* ---- Link columns ---- */
+.ft__col ul {
+  display: grid;
+  gap: 9px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ft__col a {
+  font-size: 14px;
+  color: var(--ft-dim);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.ft__col a:hover { color: var(--ft-fg); }
+
+/* Oversized wordmark, cropped by the bottom edge — the design's closing note.
+   The vw factor is tuned to the length of "elegance republic." so the line fills
+   the width without overflowing; a shorter brand name could take a larger value. */
+.ft__mark {
+  margin: 56px 0 -0.2em;
+  font-size: clamp(34px, 8.4vw, 130px);
+  font-weight: 900;
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+/* Pinned bottom-right, clear of the wordmark's line rather than stacked after it
+   (the mark's negative margin means it has no reliable box to sit below).
+   This replaces the old "Lahore, Pakistan · ©2026" legal row. */
+.ft__badge {
+  position: absolute;
+  right: 40px;
+  bottom: 16px;
+  margin: 0;
+  font-family: var(--ft-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ft-faint);
+}
+
+@media (max-width: 900px) {
+  .ft { padding: 48px 24px 0; }
+  .ft__top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .ft__lead { grid-column: 1 / -1; }
+  .ft__badge { right: 24px; }
+}
+
+@media (max-width: 639px) {
+  /* No room to pin the badge beside the wordmark — let it sit after it. */
+  .ft__badge { position: static; margin-top: 32px; }
+  .ft__mark { margin-top: 24px; }
+}

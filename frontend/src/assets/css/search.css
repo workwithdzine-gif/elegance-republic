@@ -1,0 +1,102 @@
+/* search.css — Search page.
+   Typography follows the same conventions as the collection/shop pages: the
+   page title reuses .coll-head__title, section labels are the small uppercase
+   muted micro-label, and chips match .coll-tab's weight. Hand-written rather
+   than utility-driven because the Tailwind build is pre-compiled. */
+
+/* ---- Search field ---- */
+.srch-field {
+  position: relative;
+  display: block;
+  margin-top: 4px;
+}
+
+.srch-field__icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.srch-input {
+  height: 48px;
+  width: 100%;
+  padding: 0 16px 0 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 200ms ease;
+}
+.srch-input::placeholder { color: var(--muted); font-weight: 400; }
+.srch-input:focus { border-color: var(--ink); }
+
+/* ---- Sections ---- */
+.srch-sections {
+  display: grid;
+  gap: 22px;
+  margin-top: 24px;
+}
+
+/* The site's micro-label: small, uppercase, tracked, muted — same as the
+   "Category" kicker on collection pages. */
+.srch-label {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.srch-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.srch-chip {
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+.srch-chip:hover { border-color: var(--ink); }
+
+/* Categories / Collections, shown once a query is typed. */
+.srch-refine {
+  display: grid;
+  gap: 20px;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.srch-count {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (min-width: 768px) {
+  .srch-refine { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

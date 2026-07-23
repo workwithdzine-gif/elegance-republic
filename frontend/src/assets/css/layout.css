@@ -1,0 +1,24 @@
+/* layout.css — Page shell / grid wrappers (AppLayout). Utility-driven; add overrides here. */
+
+/* Reserve the viewport for page content while the JS controllers render into it.
+   WHY: every page's body is injected by JS, so #main-content is empty for the
+   first moment. Without a floor, the JS-injected footer sits directly under the
+   header and the site reads as "loading at the footer" before snapping into
+   place. Costs nothing once content is in — real pages are far taller than this. */
+#main-content {
+  min-height: 70vh;
+}
+
+/* Side padding for the product pages. The markup carries `px-3 sm:px-5` (20px),
+   which ran the grid almost to the window edge; these breathe instead. Set here
+   rather than as utilities because global.css is a pre-compiled Tailwind build —
+   a wider `px-*` class only exists if something already used it. ID selectors
+   outrank the utility classes they override. */
+#shop-root,
+#collection-root,
+#search-root,
+/* The homepage grid is padded by its own section wrapper (js/hero.js), not by
+   #home-root — so target that instead of the root. */
+#home-root > section {
+  padding-inline: clamp(20px, 4vw, 72px);
+}

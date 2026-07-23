@@ -1,0 +1,34 @@
+/* animations.css — motion layer replacing Framer Motion entrances + whileInView.
+   Keyframe entrances run on load; scroll reveals are toggled by js/animations.js. */
+
+/* Header entrance: initial { opacity:0, y:-16 } -> 0.55s easeOut */
+@keyframes headerIn { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+.site-header { animation: headerIn 0.55s ease-out both; }
+
+/* Hero left column: { opacity:0, y:28 } -> 0.7s easeOut */
+@keyframes inUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+.anim-in-up { animation: inUp 0.7s ease-out both; }
+
+/* Hero right column: { opacity:0, x:42 } -> 0.75s easeOut, delay 0.08s */
+@keyframes inRight { from { opacity: 0; transform: translateX(42px); } to { opacity: 1; transform: translateX(0); } }
+.anim-in-right { animation: inRight 0.75s ease-out 0.08s both; }
+
+/* Hero stat card: { opacity:0, y:24 } -> 0.55s, delay 0.45s */
+@keyframes inStat { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.anim-in-stat { animation: inStat 0.55s ease-out 0.45s both; }
+
+/* Scroll reveal — replaces framer whileInView (cards stagger via --reveal-delay). */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+  transition-delay: var(--reveal-delay, 0s);
+  will-change: opacity, transform;
+}
+[data-reveal].is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header, .anim-in-up, .anim-in-right, .anim-in-stat { animation: none !important; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .product-card { transition: none !important; }
+}

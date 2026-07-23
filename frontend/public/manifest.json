@@ -1,0 +1,11 @@
+{
+  "name": "Elegance Republic",
+  "short_name": "Elegance Republic",
+  "description": "Premium Pakistani menswear for shalwar kameez, kurta shalwar, shirts, pants, and co-ords.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
+  "icons": []
+}

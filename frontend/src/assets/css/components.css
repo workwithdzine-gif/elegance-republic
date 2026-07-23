@@ -1,0 +1,563 @@
+/* components.css — custom component behaviour not expressible as a single utility.
+   (Base component classes .visual/.icon/.line-clamp-2 are compiled into global.css
+   from the original stylesheet; they are NOT duplicated here.) */
+
+/* The HTML `hidden` attribute must win over display utilities (e.g. the cart badge
+   and mobile menu carry `grid` + `hidden`). Loaded after global.css. */
+[hidden] { display: none !important; }
+
+html,
+body {
+  background-color: var(--paper);
+}
+
+.bg-soft {
+  background-color: var(--soft);
+}
+
+/* ---- Tab hover underline ---------------------------------------------------
+   Every tab on the site — the header departments (.site-nav__link: Men, Women,
+   Shop, New Arrival, on both the desktop and mobile headers) and the category
+   tabs under a page head (.coll-tab: All, Eastern Wear, Tops, Bottoms …) — gets
+   the same underline that wipes in from the left on hover and retracts to the
+   right on leave. Defined once here because the effect spans navigation.css and
+   collection.css; each file still owns the tab's own type and colour.
+   Rendered with a scaled ::after rather than an animated width so it stays on
+   the compositor (no layout work per frame). */
+.site-nav__link,
+.coll-tab {
+  position: relative;
+}
+
+.site-nav__link::after,
+.coll-tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  /* Leave animation: collapses toward the right, continuing the same direction. */
+  transform-origin: right center;
+  transition: transform 220ms ease;
+}
+
+.site-nav__link:hover::after,
+.coll-tab:hover::after {
+  transform: scaleX(1);
+  /* Hover animation: grows from the left edge. */
+  transform-origin: left center;
+}
+
+/* The active tab wears that same underline permanently, so hovering it changes
+   nothing instead of stacking a second line under the first. */
+.site-nav__link.is-active::after,
+.coll-tab.is-active::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+/* Respect a reduced-motion preference: show the underline, skip the wipe. */
+@media (prefers-reduced-motion: reduce) {
+  .site-nav__link::after,
+  .coll-tab::after { transition: none; }
+}
+
+/* ---- Product grid + card ---------------------------------------------------
+   Matches the reference storefront: 3 columns / 8px gutter, a 3:4 image that
+   crossfades to the second photo on hover, and one row under it with the title
+   left and price right, both flush to the image edges. The card itself has no
+   background, border, radius, or padding — the only surface is the image box. */
+/* Columns sit tight (8px) while rows breathe: the reference's row pitch is 712px
+   = 618 image + 16 title gap + 15 title + 63 gutter. Rows and columns are
+   deliberately NOT the same gap. */
+.product-grid {
+  display: grid;
+  width: 100%;
+  max-width: 1312px;
+  margin-inline: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 8px;
+  row-gap: 40px;
+}
+
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 64px;
+  }
+}
+
+.product-card {
+  position: relative;
+}
+
+.product-card__media {
+  position: relative;
+  /* Shorter than the reference's 3:4 by request — 4:5 keeps the same rhythm
+     without the cards running so long down the page. */
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: var(--soft);
+}
+
+.product-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Second photo sits over the first and is swapped in on hover with NO fade —
+   an instant cut, and an instant cut back the moment the pointer leaves.
+   Both halves of the swap matter: the primary is hidden as the hover shot
+   appears, not just covered by it. The photography is transparent PNG, so two
+   stacked images would show through each other. */
+.product-card__img--hover { opacity: 0; }
+.product-card:hover .product-card__img--hover { opacity: 1; }
+.product-card:hover .product-card__img:not(.product-card__img--hover) { opacity: 0; }
+
+/* Stretched link: covers the whole card so image, title and price are all
+   clickable, while leaving Quick Add (z-index above) its own hit area. */
+.product-card__link { position: static; }
+.product-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ---- "New" flag ----
+   Top-left, riding on the image. Only products whose data carries the New badge
+   get one (see renderCard), so it stays a flag rather than wallpaper. */
+.product-card__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  padding: 4px 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* ---- Quick Add ----
+   Rises out of the bottom-right of the image on card hover. Sits above the
+   stretched link so it takes its own clicks (bindCardActions → addItem). */
+.product-card__quick {
+  /* Inset from the image's bottom-right corner rather than welded into it. */
+  --quick-inset: 14px;
+
+  position: absolute;
+  right: var(--quick-inset);
+  bottom: var(--quick-inset);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-width: 45%;
+  padding: 14px 16px;
+  border: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  /* Hidden state: pushed fully past the image's bottom edge, where the media
+     box's overflow:hidden clips it. Travel must cover its own height *plus* the
+     inset, or it would sit peeking above the edge instead of out of sight. */
+  opacity: 0;
+  transform: translateY(calc(100% + var(--quick-inset)));
+  transition: opacity 260ms ease, transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), background 200ms ease;
+}
+
+.product-card:hover .product-card__quick,
+.product-card:focus-within .product-card__quick {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hovering the button itself: it lifts off black, and the plus spins a quarter
+   turn — the button answers the pointer rather than just sitting there. */
+.product-card__quick:hover {
+  background: #000;
+}
+
+.product-card__plus {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.product-card__quick:hover .product-card__plus {
+  transform: rotate(90deg);
+}
+
+/* Touch and reduced-motion: no hover to reveal it, so it is simply always there
+   rather than unreachable. */
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .product-card__quick {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .product-card__plus { transition: none; }
+}
+
+/* On a phone the card is roughly half the screen and Quick Add is permanently
+   visible (no hover to reveal it), so at desktop scale it covered the product.
+   Sized down to a tag rather than a banner, and dropping min-width lets it hug
+   its own label instead of claiming 45% of the card. */
+@media (max-width: 767px) {
+  .product-card__quick {
+    --quick-inset: 8px;
+    min-width: 0;
+    gap: 10px;
+    padding: 8px 10px;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+
+  .product-card__plus {
+    width: 12px;
+    height: 12px;
+  }
+
+  .product-card__badge {
+    top: 8px;
+    left: 8px;
+    padding: 3px 6px;
+    font-size: 9px;
+  }
+}
+
+.product-card__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.product-card__title,
+.product-card__price {
+  font-size: 11.2px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.product-card__title {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-card__price { white-space: nowrap; }
+
+/* Placeholder mode: most photos on disk are still grey "REPLACE WITH PRODUCT
+   PHOTO" stand-ins, so their images stay hidden and the card reads as a clean
+   grey block instead of showing the stand-in.
+   Cards whose product HAS real photography opt out via .product-card--photo
+   (renderCard sets it from data/photos.js) — that is the whole reason a real
+   photo can now appear at all. As more products get real shots, they light up
+   one by one; when none are left on stand-ins, delete this rule and
+   .flat-media-card img below. */
+.product-card:not(.product-card--photo) .product-card__media img {
+  opacity: 0;
+}
+
+.flat-media-card {
+  background-color: var(--soft) !important;
+}
+
+.flat-media-card img {
+  opacity: 0 !important;
+}
+
+/* NOTE: two rules that greyed out the homepage hero image and its text overlay
+   were removed here — the homepage no longer renders a hero at all (see
+   initHomePage() in js/hero.js). They targeted `#home-root > section:first-child`,
+   which is now the section head, and would have greyed it out instead. The
+   .product-card / .flat-media-card image rules above are unrelated and stay. */
+
+.hero-click-target {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: block;
+}
+
+.flat-media-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  padding: 0 16px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.image-ref-badge {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 50;
+  max-width: calc(100% - 16px);
+  padding: 3px 6px;
+  overflow: hidden;
+  border: 1px solid rgb(17 17 17 / 0.12);
+  background: rgb(255 255 255 / 0.78);
+  color: #555;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pp-hero,
+.pp-thumb {
+  background-color: var(--soft) !important;
+}
+
+.pp-hero img,
+.pp-thumb img {
+  opacity: 0 !important;
+}
+
+/* Keep product cards stationary on hover. */
+.product-card { transition: box-shadow 0.3s ease; }
+
+.er-mobile-product-count { display: none; }
+
+@media (max-width: 767px) {
+  .er-listing-page {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .er-mobile-product-count {
+    display: block;
+    margin: -1px 0 24px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .product-card__media { aspect-ratio: 3 / 4; }
+
+  /* Keep phone cards as clean as the reference: image, title, and price only. */
+  .product-card__quick,
+  .product-card__badge,
+  .er-card-heart {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  #collection-root,
+  #wishlist-root,
+  #search-root {
+    padding-left: clamp(24px, 4vw, 64px) !important;
+    padding-right: clamp(24px, 4vw, 64px) !important;
+  }
+
+  /* Shared listing gutters keep cards away from both viewport edges. */
+  .er-listing-page {
+    width: min(1440px, 100%);
+    padding-left: clamp(24px, 4vw, 64px) !important;
+    padding-right: clamp(24px, 4vw, 64px) !important;
+  }
+
+  #home-root section + section {
+    margin-top: clamp(12px, 2vw, 32px);
+  }
+
+  .product-card {
+    min-height: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  #home-root .grid,
+  #collection-root .grid,
+  #wishlist-root .grid,
+  #search-root .grid {
+    gap: 24px !important;
+  }
+}
+
+/* Frosted-glass header. Defined here because the compiled Tailwind build does not
+   include bg-white/50 or backdrop-blur-xl, so those utilities rendered as no-ops
+   (header looked fully transparent). This guarantees the frosted look. */
+.nav-frosted {
+  background-color: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+/* Fallback for browsers without backdrop-filter: keep it clearly opaque, not see-through. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav-frosted { background-color: rgba(255, 255, 255, 0.93); }
+}
+
+/* Hide scrollbars (page + horizontal product carousels) while keeping scroll. */
+/* overflow-x: clip prevents any accidental horizontal page scroll (full-bleed
+   sliders, wide headings) without creating a scroll container — so position:
+   sticky keeps working and vertical scroll is unaffected. */
+html { scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; overflow-x: clip; }
+html::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ---- Disabled states -------------------------------------------------------
+   Before this rule the site had no :disabled styling of its own: a disabled
+   button kept its full-contrast fill and its hover transform, so "submitting…"
+   looked identical to "ready" and still lifted under the pointer. The compiled
+   global.css only sets `:disabled { cursor: default }`.
+
+   [aria-disabled="true"] is included because links and custom controls cannot
+   carry the real `disabled` attribute. Note it does NOT block clicks on its own
+   — JS must still guard the handler; this is the visual half only. */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Kill the affordances that imply "this still responds to you". */
+button:disabled:hover,
+[aria-disabled="true"]:hover {
+  transform: none;
+  background: inherit;
+}
+
+.product-card__quick:disabled:hover,
+.pp-btn:disabled:hover,
+.btn-ink:disabled:hover,
+.btn-outline:disabled:hover {
+  /* These each set their own hover background; re-assert the resting fill so a
+     disabled button does not darken on hover. */
+  background: var(--ink);
+}
+
+.btn-outline:disabled:hover {
+  background: transparent;
+}
+
+.product-card__quick:disabled .product-card__plus {
+  transform: none;
+}
+
+/* ---- Demo-data banner ------------------------------------------------------
+   Shown by showDemoDataBanner() (js/utils.js) whenever the bundled demo catalog
+   is what's on screen. Fixed rather than inserted in flow: a block at the top of
+   the document would reflow every page it lands on. */
+.demo-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 9998; /* under the cursor ring (9999), over page chrome */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 12px 10px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 30px rgb(0 0 0 / 0.18);
+}
+
+.demo-banner__text {
+  /* min-width:0 is load-bearing: a flex item defaults to min-width:auto, so the
+     nowrap text refused to shrink and pushed the banner past its own max-width
+     and off the right edge on narrow phones. This is what lets it ellipsize. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.demo-banner__x {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.14);
+  color: inherit;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.demo-banner__x:hover { background: rgb(255 255 255 / 0.28); }
+
+/* ---- Loading skeleton ------------------------------------------------------
+   One pair: .skel (shimmer block) + .skel--line (text-height bar). Used by
+   renderGridSkeleton() in js/product.js. */
+.skel {
+  position: relative;
+  overflow: hidden;
+  background: var(--soft);
+}
+
+.skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent);
+  animation: skel-sweep 1.25s ease-in-out infinite;
+}
+
+.skel--line {
+  display: block;
+  height: 0.7em;
+  border-radius: 3px;
+}
+
+@keyframes skel-sweep {
+  100% { transform: translateX(100%); }
+}
+
+/* A shimmer that never stops is exactly the kind of motion this opts out of. */
+@media (prefers-reduced-motion: reduce) {
+  .skel::after { animation: none; }
+}

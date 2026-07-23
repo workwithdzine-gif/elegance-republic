@@ -1,0 +1,131 @@
+/* collection.css - Collection/category grid + horizontal filter controls. */
+
+/* The page head matches the reference storefront exactly. Values below are not
+   eyeballed from a screenshot — they are read out of the reference's own CSS
+   (Framer presets `ha1qz1` for the title, and the inline style on its category
+   tabs), so "same font, same weight" is literal:
+     title — Satoshi 700, 80/64/51px, -0.04em, line-height 1
+     tabs  — Geist 500, -0.04em, idle / active (the reference's #aaa idle is
+             overridden to var(--muted) for WCAG AA — see .coll-tab below)
+   Both faces are declared in css/typography.css. */
+
+[data-filter] {
+  accent-color: var(--ink);
+}
+
+/* ---- Section head ----------------------------------------------------------
+   Title on the left, category tabs bottom-right. The title is the tab you are on
+   (Men / Women / Shop / New Arrival); the tabs filter within it. There is no
+   description line — removed by request. See js/section-head.js. */
+.coll-head {
+  display: grid;
+  align-items: start;
+  padding: clamp(20px, 3vw, 44px) 0 clamp(16px, 1.8vw, 24px);
+}
+
+.coll-head__title {
+  margin: 0;
+  font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+  /* The reference steps 51 → 64 → 80px across its breakpoints; the clamp walks
+     the same range rather than snapping. */
+  font-size: clamp(51px, 5.6vw, 80px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+
+.coll-head__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: clamp(14px, 1.8vw, 30px);
+  margin-top: clamp(18px, 2.6vw, 40px);
+}
+
+.coll-tab {
+  padding: 0;
+  border: 0;
+  background: none;
+  /* The reference uses #aaa here, but that is 2.32:1 on white — it fails WCAG AA
+     for text (4.5:1). --muted is the site's own idle grey at 5.05:1: still clearly
+     recessed against the --ink active tab, but legible. This is a deliberate
+     departure from the reference. */
+  color: var(--muted);
+  /* Geist, inherited from body (css/typography.css). */
+  font-family: inherit;
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.coll-tab:hover,
+.coll-tab.is-active {
+  color: var(--ink);
+}
+
+/* ---- Count + sort row ---- */
+/* Product count and the rules above/below it are gone by request. What remains is
+   the sort control, alone on its row — hence flex-end rather than the old
+   space-between, which paired it against the count. The homepage and shop drop
+   this row entirely (they had no sort to keep). */
+.coll-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 4px 0 24px;
+}
+
+.coll-bar__sort {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 767px) {
+  /* Size only. The reference's smallest step is still 51px, which dwarfed the
+     logo here and read as shouting on a phone — that dial-back stands. Weight and
+     tracking stay at the reference's 700 / -0.04em so the type is the same
+     everywhere; only the scale is ours. Applies to every page — they share
+     this head. */
+  .coll-head__title {
+    font-size: clamp(22px, 6.4vw, 30px);
+  }
+
+  /* No sort on phones, by request — it was a full row of chrome above the grid.
+     The <select> is only hidden, not removed, so js/filters.js still binds to it
+     and the ?sort= URL keeps working. */
+  .coll-bar {
+    display: none;
+  }
+
+  /* One swipeable row instead of wrapping onto two lines — keeps the head
+     compact and reads the same way the desktop strip does. */
+  .coll-head__tabs {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Bleed to the page edges so the row can scroll past the container padding. */
+    margin-inline: -20px;
+    padding-inline: 20px;
+    /* Room for the hover underline (components.css) — overflow-x:auto also clips
+       vertically, so without this the line falls outside the padding box. */
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .coll-head__tabs::-webkit-scrollbar { display: none; }
+
+  .coll-tab { flex: 0 0 auto; }
+
+  /* Western Wear is intentionally absent from every phone category rail. */
+  .coll-tab[data-category="western-wear"] { display: none; }
+}

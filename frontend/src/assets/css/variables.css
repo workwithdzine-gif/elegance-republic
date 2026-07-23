@@ -1,0 +1,46 @@
+/* variables.css — design tokens.
+   The utility classes that consume the ORIGINAL Tailwind theme are compiled into
+   global.css as literal rgb() values (e.g. `.text-muted{color:rgb(102 102 102)}`),
+   so global.css does NOT read any custom property defined here. Handwritten CSS
+   does. That split is the source of the two-palette drift — see the note on the
+   deprecated block below. */
+:root {
+  /* ---- Canonical palette (J.-style minimal theme) --------------------------
+     This is the set to use. Every handwritten stylesheet reads from it. */
+  --ink: #171717;         /* primary text, buttons */
+  --paper: #FFFFFF;       /* page surface */
+  --soft: #ECECEC;        /* card / light grey surface */
+  --line: #e6e6e3;        /* hairline borders */
+  --muted: #6f6f6a;       /* secondary text — 5.05:1 on --paper (WCAG AA) */
+  --sale: #c8102e;        /* sale price + discount badge (red) */
+  --sale-soft: #fbe9ec;   /* faint red wash */
+
+  /* ---- Named non-palette colours -------------------------------------------
+     Intentionally NOT near any token above — they carry their own meaning, so
+     they get names rather than being folded into --ink/--soft/--line. */
+  --noir: #0a0a0a;        /* dark chrome surface: landing + footer (not --ink) */
+  --success: #15925c;     /* "verified" ticks, confirmed states */
+  --star: #22c55e;        /* filled rating star */
+  --star-idle: #d3d3d0;   /* empty rating star */
+
+  --shadow-fashion: 0 18px 40px rgb(17 17 17 / 0.10);
+  --radius-pill: 999px;
+
+  /* ---- DEPRECATED — do not use in new code ---------------------------------
+     A second, competing palette that predates the canonical set above. It has
+     ZERO consumers: nothing in css/, js/, admin/, or pages/ reads var(--color-*).
+     Kept only as aliases so any stray reference resolves to the canonical value
+     instead of re-introducing the drift (#111111 vs #171717, #666666 vs #6f6f6a,
+     #EAEAEA vs #e6e6e3). Delete once you are confident nothing external needs it.
+
+     NOTE: aliasing these does not close the real gap. The legacy VALUES are
+     baked as literals into the compiled global.css (`.border-line` is still
+     rgb(234 234 234) = #EAEAEA, `.bg-soft` is still rgb(247 247 247) = #f7f7f7).
+     Only a Tailwind rebuild can align those; global.css is out of scope here. */
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-paper: var(--paper);
+  --color-soft: var(--soft);
+  --color-app-bg: var(--paper);
+}

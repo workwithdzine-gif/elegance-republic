@@ -1,0 +1,26 @@
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './assets/css/variables.css'
+import './assets/css/global.css'
+import './assets/css/layout.css'
+import './assets/css/navigation.css'
+import './assets/css/homepage.css'
+import './assets/css/collection.css'
+import './assets/css/product.css'
+import './assets/css/search.css'
+import './assets/css/cart.css'
+import './assets/css/footer.css'
+import './assets/css/components.css'
+import './assets/css/cursor.css'
+import './assets/css/animations.css'
+import './assets/css/responsive.css'
+import './assets/css/premium-sections.css'
+import './assets/css/landing.css'
+import './assets/css/typography.css'
+import './assets/css/react-store.css'
+import './assets/css/admin.css'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode><App/></React.StrictMode>,
+)

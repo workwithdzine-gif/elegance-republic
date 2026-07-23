@@ -1,0 +1,60 @@
+/* typography.css — the site's two typefaces, in one place.
+   Geist for everything, Satoshi for the big page headings — matching the
+   reference storefront, whose own CSS specifies exactly that pairing.
+
+   Loaded LAST on every page, because it has to beat `body { font-family: Inter }`
+   baked into the compiled Tailwind build (css/global.css), which cannot be edited
+   without re-running the Tailwind toolchain.
+
+   Nearly every component declares `font-family: inherit` and so follows body — the
+   card titles, footer, product-page copy, form controls and search chips all pick
+   Geist up from here rather than each naming it. The exceptions are listed at the
+   bottom: things that must be Satoshi. */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap');
+
+/* Satoshi is not on Google Fonts, and Fontshare's CSS API registers no faces when
+   @import-ed — so the file is vendored and declared here. No third-party request,
+   and no dependency on Fontshare's opaque hashed URLs staying put. */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  /* swap: render the fallback immediately rather than an invisible heading. */
+  font-display: swap;
+}
+
+/* ---- Geist: the default for the whole site ---- */
+body {
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Form controls do not inherit the page font on their own. */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+/* ---- Placeholder contrast --------------------------------------------------
+   The compiled global.css ships Tailwind's preflight default,
+   `::placeholder { color: #9ca3af }`, which is 2.54:1 on white and fails WCAG AA.
+   --muted is 5.05:1. This file is linked last on every page, so it wins on order
+   at equal specificity. Components that set their own placeholder colour with a
+   class (e.g. .ft__input::placeholder on the dark footer) are more specific and
+   are intentionally left alone. */
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+/* ---- Satoshi: display headings only ----
+   The page head (Men / Women / Shop / Search — see css/collection.css) and the
+   product title. Only the 700 face is vendored, which is the only weight the
+   reference uses for these. */
+.pp-name {
+  font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+}

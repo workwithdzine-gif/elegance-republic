@@ -1,0 +1,278 @@
+/* landing.css — the dark editorial splash landing page (pages/landing.html).
+   WHY a standalone stylesheet: this page deliberately opts out of the white
+   storefront chrome (navbar/footer) and owns its own dark palette, so its tokens
+   are scoped to .landing rather than leaking into :root and the rest of the site.
+   Hand-written semantic CSS — no utility classes are used on this page. */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;900&family=PT+Mono&display=swap');
+
+/* Minimal reset. WHY: this page intentionally does not load global.css (the
+   compiled-Tailwind sheet that carries preflight everywhere else), so it has to
+   zero the UA defaults itself — otherwise body's 8px margin shows as white gaps. */
+html:has(.landing) {
+  background: var(--noir);
+}
+
+.landing,
+.landing * {
+  box-sizing: border-box;
+}
+
+/* UA heading/paragraph margins would fight every `gap` in this layout.
+   `:where()` keeps this at zero specificity so component rules still win. */
+:where(.landing) :where(h1, h2, h3, p) {
+  margin: 0;
+}
+
+.landing {
+  margin: 0;
+  /* Scoped dark tokens — intentionally NOT the global light theme. */
+  --lp-bg: var(--noir);
+  --lp-fg: var(--paper);
+  --lp-dim: rgba(255, 255, 255, 0.55);
+  --lp-faint: rgba(255, 255, 255, 0.28);
+  --lp-rule: rgba(255, 255, 255, 0.14);
+  --lp-display: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --lp-mono: 'PT Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  background: var(--lp-bg);
+  color: var(--lp-fg);
+  font-family: var(--lp-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Small mono caps label — the recurring accent of this design. */
+.lp-label {
+  font-family: var(--lp-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lp-dim);
+}
+
+/* ---- Hero -------------------------------------------------------------- */
+/* One full-viewport photograph carries the whole design. The scrim keeps the
+   centred nav legible regardless of how bright the photo behind it is. */
+.lp-hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lp-hero__media,
+.lp-hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+/* The background <video> plays untouched — no brightness/contrast filter and no
+   scrim over it, by request. The wordmark, nav and clock sit on top of raw
+   footage, so legibility now depends entirely on the footage staying dark behind
+   the centre of the frame.
+   No poster either: this background colour is what fills the element until the
+   first frame decodes, so the load reads as black rather than a flash of white. */
+.lp-hero__media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: var(--noir);
+}
+
+/* Scrim removed by request — the element stays in the markup as the hook to
+   reintroduce a wash if the footage ever fights the type. */
+
+/* ---- Centred brand + vertical nav -------------------------------------- */
+.lp-hero__center {
+  display: grid;
+  justify-items: center;
+  gap: 26px;
+  padding: 24px;
+  text-align: center;
+}
+
+.lp-wordmark {
+  font-size: clamp(20px, 2.1vw, 26px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+  color: var(--lp-fg);
+  text-decoration: none;
+}
+
+.lp-nav {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+}
+
+.lp-nav a {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--lp-dim);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.lp-nav a:hover,
+.lp-nav a:focus-visible {
+  color: var(--lp-fg);
+  animation: lp-vibrate 1.1s ease-in-out infinite;
+}
+
+/* A slow, small sway rather than a fast jitter: a long cycle and eased turns at
+   each extreme make it read as breathing. Amplitude stays sub-pixel-ish (1.2px)
+   so the label never looks like it is glitching. */
+@keyframes lp-vibrate {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1.2px); }
+  75% { transform: translateX(1.2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-nav a:hover,
+  .lp-nav a:focus-visible { animation: none; }
+}
+
+/* ---- Live clock -------------------------------------------------------- */
+.lp-clock {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* Tabular figures stop the seconds digit from nudging the line as it ticks. */
+.lp-clock__time {
+  font-variant-numeric: tabular-nums;
+  color: var(--lp-fg);
+}
+
+/* The footer moved to css/footer.css — it is the site-wide footer now and is
+   injected into #site-footer by js/navigation.js on this page too. */
+
+/* ---- Welcome-offer modal ----------------------------------------------- */
+.lp-modal[hidden] { display: none; }
+
+.lp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(10, 10, 10, 0.55);
+  animation: lp-fade 0.4s ease both;
+}
+
+.lp-modal__card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: min(600px, 100%);
+  background: var(--paper);
+  color: var(--ink);
+  animation: lp-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.lp-modal__media {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  object-fit: cover;
+}
+
+.lp-modal__body {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  padding: 40px 36px;
+}
+
+.lp-modal__body .lp-label { color: var(--muted); }
+
+.lp-modal__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.lp-modal__form { display: grid; gap: 10px; }
+
+.lp-modal__input {
+  height: 44px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--soft);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  outline: none;
+}
+
+.lp-modal__input:focus { border-color: var(--ink); }
+
+.lp-modal__submit {
+  height: 44px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--ink);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+
+.lp-modal__submit:hover { opacity: 0.85; }
+
+.lp-modal__note {
+  min-height: 16px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.lp-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.lp-modal__close:hover { background: var(--soft); }
+
+@keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lp-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- Responsive -------------------------------------------------------- */
+@media (max-width: 639px) {
+  .lp-modal__card { grid-template-columns: 1fr; }
+  .lp-modal__media { min-height: 180px; max-height: 200px; }
+  .lp-modal__body { padding: 28px 24px 32px; }
+}
+
+/* Respect users who ask the OS for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .lp-modal,
+  .lp-modal__card { animation: none; }
+}
