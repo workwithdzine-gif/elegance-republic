@@ -23,7 +23,7 @@ export default function Navbar() {
   const tabLink = (tab) => (
     <Link
       key={tab.slug}
-      to={`/?tab=${tab.slug}`}
+      to={`/home?tab=${tab.slug}`}
       className={`site-nav__link ${tab.slug === activeTab ? 'is-active' : ''}`}
       onClick={() => {
         if (tab.slug === 'men' || tab.slug === 'women') setGender(tab.slug)
