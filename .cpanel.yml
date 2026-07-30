@@ -1,5 +1,3 @@
----
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/elegfqxs/public_html/
-    - /bin/cp -R frontend/dist/. $DEPLOYPATH
+    - /bin/cp -R frontend/dist/. /home/elegfqxs/public_html/
