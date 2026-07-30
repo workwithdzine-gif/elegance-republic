@@ -1,3 +1,4 @@
 deployment:
   tasks:
-    - /bin/cp -R frontend/dist/. /home/elegfqxs/public_html/
+    - /bin/mkdir -p /home/elegfqxs/public_html/
+    - /bin/cp -R /home/elegfqxs/repositories/elegance-republic/frontend/dist/. /home/elegfqxs/public_html/
